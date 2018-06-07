@@ -31,7 +31,7 @@ class SentimentAnalyzer extends LazyLogging {
       settings
     }
 
-    createTopology(builder, "tweets", "translated")
+    createTopology(builder, "tweets", "analyzed")
 
     val stream: KafkaStreams = new KafkaStreams(builder.build(), streamingConfig)
 

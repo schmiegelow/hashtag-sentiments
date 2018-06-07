@@ -14,6 +14,11 @@ public class TwitterFeeder {
 
     private Twitter twitter;
 
+    public static void main(String[] args) {
+
+    }
+
+
     public TwitterFeeder() {
         getConfigurationBuildObject();
         TwitterFactory twitterFactory = new TwitterFactory(getConfigurationBuildObject().build());

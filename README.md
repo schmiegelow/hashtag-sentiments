@@ -12,3 +12,7 @@ Exec into a kafka node and run
 ```kafka-topics --create --if-not-exists --zookeeper zookeeper.internal-service:2181 --replication-factor 3 --partitions 1 --topic tweets```
 
 ```kafka-topics --create --if-not-exists --zookeeper zookeeper.internal-service:2181 --replication-factor 3 --partitions 1 --topic analyzed```
+
+Then run:
+
+```./kafka-connect/bin/setup.sh```

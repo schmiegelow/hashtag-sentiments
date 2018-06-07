@@ -32,7 +32,9 @@ dockerCommands := Seq()
 dockerCommands := Seq(
   Cmd("FROM", "openjdk:latest"),
   Cmd("LABEL", s"""MAINTAINER="${maintainer.value}""""),
-  Cmd("RUN", "apt-get update && apt-get install -y curl && apt-get install -y supervisor"),
+  Cmd("RUN", "apt-get update && apt-get install -y curl supervisor"),
+//  Cmd("RUN", "CLOUD_SDK_REPO=\"cloud-sdk-$(lsb_release -c -s)\" echo \"deb http://packages.cloud.google.com/apt $CLOUD_SDK_REPO main\" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list && curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -"),
+//  Cmd("RUN", "apt-get update && apt-get install google-cloud-sdk && apt-get install google-cloud-sdk-app-engine-java && gcloud init"),
   Cmd("COPY", "supervisord.conf /etc/supervisor/conf.d/"),
   Cmd("WORKDIR", "/opt/docker"),
   Cmd("ADD", "opt /opt"),

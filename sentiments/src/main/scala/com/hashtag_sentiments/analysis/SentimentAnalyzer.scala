@@ -2,18 +2,16 @@ package com.hashtag_sentiments.analysis
 
 import java.util.Properties
 
+import com.google.cloud.language.v1.Document.Type
+import com.google.cloud.language.v1.{Document, LanguageServiceClient}
 import com.google.cloud.translate.Translate.TranslateOption
 import com.google.cloud.translate.{TranslateOptions, Translation}
 import com.typesafe.config.{Config, ConfigFactory}
 import com.typesafe.scalalogging.LazyLogging
 import org.apache.kafka.common.serialization.Serdes
-import org.apache.kafka.streams.{KafkaStreams, StreamsBuilder, StreamsConfig}
 import org.apache.kafka.streams.kstream.KStream
-
-import com.google.cloud.language.v1.Document
-import com.google.cloud.language.v1.Document.Type
-import com.google.cloud.language.v1.LanguageServiceClient
-import com.google.cloud.language.v1.Sentiment
+import org.apache.kafka.streams.{KafkaStreams, StreamsBuilder, StreamsConfig}
+import play.api.libs.json.Json
 
 
 class SentimentAnalyzer extends LazyLogging {
@@ -51,17 +49,14 @@ class SentimentAnalyzer extends LazyLogging {
 
   def createTopology(builder: StreamsBuilder, input: String, output: String): Unit = {
     // Read the input Kafka topic into a KStream instance.
-    val textLines: KStream[Array[Byte], Array[Byte]] = builder.stream(input)
+    val tweets: KStream[Array[Byte], Array[Byte]] = builder.stream(input)
 
-    val incomingValues: KStream[Array[Byte], Array[Byte]] = textLines
-      .filter((_: Array[Byte], value: Array[Byte]) => {
-        detectLanguage(new String(value)) != "en"
-      })
+    val incomingValues: KStream[Array[Byte], Array[Byte]] = tweets
       .mapValues(value => {
         val text = new String(value)
-        val fromLanguage = detectLanguage(text)
-        logger.info(s"Translating $text in $fromLanguage to English")
-        translateText(text, fromLanguage).getTranslatedText.getBytes()
+        val tweet = Json.parse(text).as[Tweet]
+        val analyzedTweet = detectSentiment(tweet)
+        Json.toJson(analyzedTweet).toString().getBytes
       })
     incomingValues.to(output)
   }
@@ -77,15 +72,13 @@ class SentimentAnalyzer extends LazyLogging {
     translate.detect(text).getLanguage
   }
 
-  def detectSentiment(text: String) = {
+  def detectSentiment(tweet: Tweet): AnalyzedTweet = {
       val language = LanguageServiceClient.create
-      try { // The text to analyze
-        val text = "Hello, world!"
-        val doc = Document.newBuilder.setContent(text).setType(Type.PLAIN_TEXT).build
-        // Detects the sentiment of the text
+      try {
+        val doc = Document.newBuilder.setContent(tweet.tweet).setType(Type.PLAIN_TEXT).build
         val sentiment = language.analyzeSentiment(doc).getDocumentSentiment
-        System.out.printf("Text: %s%n", text)
-//        System.out.printf("Sentiment: %s, %s%n", sentiment.getScore, sentiment.getMagnitude)
+        println(s"Text: ${tweet.tweet}, Scores: ${sentiment.getScore}/${sentiment.getMagnitude}")
+        AnalyzedTweet(tweet.tweetId, tweet.user, tweet.timestamp, tweet.tweet, tweet.hashtag, sentiment.getScore, sentiment.getMagnitude)
       } finally if (language != null) language.close()
   }
 }

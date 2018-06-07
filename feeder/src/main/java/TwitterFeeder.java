@@ -46,7 +46,7 @@ public class TwitterFeeder {
                     .getTweets()
                     .stream()
                     .map(status -> new Tweet(status.getUser().getName(), status.getCreatedAt().getTime(), status.getText()))
-                    .collect(Collectors.toList()));
+                    .collect(Collectors.toList());
     }
 
 }

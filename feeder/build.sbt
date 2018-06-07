@@ -6,7 +6,8 @@ libraryDependencies ++= {
     "org.apache.kafka" % "kafka-streams" % kafkaV,
     "org.twitter4j" % "twitter4j-core" % "4.0.6",
     "junit" % "junit" % "4.12" % Test,
-    "com.fasterxml.jackson.core" % "jackson-core" % "2.9.5"
+    "com.fasterxml.jackson.core" % "jackson-core" % "2.9.5",
+    "com.novocode" % "junit-interface" % "0.11" % Test
   )
 }
 

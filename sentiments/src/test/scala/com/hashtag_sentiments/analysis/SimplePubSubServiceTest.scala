@@ -19,7 +19,7 @@ class SimplePubSubServiceTest extends org.scalatest.FunSpec
   with Matchers
   with BeforeAndAfterAll {
 
-  it("Simple Kafka test") {
+  ignore("Simple Kafka test") {
 
     val numInputMessages = 100
     val topic = "articles"

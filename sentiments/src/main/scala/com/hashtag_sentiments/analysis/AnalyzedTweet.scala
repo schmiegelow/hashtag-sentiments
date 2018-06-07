@@ -1,3 +1,9 @@
 package com.hashtag_sentiments.analysis
 
-case class AnalyzedTweet(user:String, timestamp: Long, tweet: String, score: Float, magnitude: Float)
+import play.api.libs.json.Json
+
+case class AnalyzedTweet(tweetId: Long, user:String, timestamp: Long, tweet: String, hashtag: String, score: Float, magnitude: Float)
+
+object AnalyzedTweet {
+  implicit val analyzedTweetFormat = Json.format[AnalyzedTweet]
+}

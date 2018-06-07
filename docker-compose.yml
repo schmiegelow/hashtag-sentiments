@@ -84,3 +84,8 @@ services:
     depends_on:
       - elasticsearch
       - kafka01.internal-service
+  sentiments:
+    build: sentiments/target/docker/stage
+    depends_on:
+      - elasticsearch
+      - kafka01.internal-service

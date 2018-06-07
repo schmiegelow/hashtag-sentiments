@@ -1,6 +1,6 @@
 *.class
 *.log
-converter/src/main/resources/iwomm-kafka-22f7c9eb6c1e.json
+sentiments/src/universal/hashtag-sentiments.json
 /.idea/
 project/project/
 target/

@@ -4,7 +4,9 @@ libraryDependencies ++= {
   val kafkaV = "1.0.1"
   Seq(
     "org.apache.kafka" % "kafka-streams" % kafkaV,
-    "org.twitter4j" % "twitter4j-core" % "4.0.6"
+    "org.twitter4j" % "twitter4j-core" % "4.0.6",
+    "junit" % "junit" % "4.12" % Test,
+    "com.fasterxml.jackson.core" % "jackson-core" % "2.9.5"
   )
 }
 

@@ -10,6 +10,12 @@ import org.apache.kafka.common.serialization.Serdes
 import org.apache.kafka.streams.{KafkaStreams, StreamsBuilder, StreamsConfig}
 import org.apache.kafka.streams.kstream.KStream
 
+import com.google.cloud.language.v1.Document
+import com.google.cloud.language.v1.Document.Type
+import com.google.cloud.language.v1.LanguageServiceClient
+import com.google.cloud.language.v1.Sentiment
+
+
 class SentimentAnalyzer extends LazyLogging {
 
   val configuration: Config = ConfigFactory.load()
@@ -69,5 +75,17 @@ class SentimentAnalyzer extends LazyLogging {
   def detectLanguage(text: String): String = {
     val translate = TranslateOptions.getDefaultInstance.getService
     translate.detect(text).getLanguage
+  }
+
+  def detectSentiment(text: String) = {
+      val language = LanguageServiceClient.create
+      try { // The text to analyze
+        val text = "Hello, world!"
+        val doc = Document.newBuilder.setContent(text).setType(Type.PLAIN_TEXT).build
+        // Detects the sentiment of the text
+        val sentiment = language.analyzeSentiment(doc).getDocumentSentiment
+        System.out.printf("Text: %s%n", text)
+//        System.out.printf("Sentiment: %s, %s%n", sentiment.getScore, sentiment.getMagnitude)
+      } finally if (language != null) language.close()
   }
 }

@@ -2,7 +2,7 @@ import sbt.Keys.scalacOptions
 
 lazy val settings = inThisBuild(
   List(
-    organization := "com.schmiegelow",
+    organization := "com.hashtag-sentiments",
     scalaVersion := "2.12.4",
     version := "0.1.0-SNAPSHOT"
   ))

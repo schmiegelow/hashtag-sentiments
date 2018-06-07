@@ -9,6 +9,7 @@ http://localhost:8083/connectors \
     "tasks.max": "1",
     "topics": "analyzed",
     "key.ignore": "true",
+    "schemas.enable":"false",
     "connection.url": "http://elasticsearch:9200",
     "type.name": "kafka-connect",
     "name": "elasticsearch-sink"

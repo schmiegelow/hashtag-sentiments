@@ -1,16 +1,6 @@
 version: '3'
 
 services:
-#  kafka01.internal-service:
-#    image: spotify/kafka
-#    ports:
-#      - "9092:9092"
-#      - "2181:2181"
-#    hostname: kafka01.internal-service
-#    environment:
-#      ADVERTISED_HOST_NAME: kafka01.internal-service
-#      ADVERTISED_PORT: 9092
-#      KAFKA_VERSION: 0.11.0.2
   zookeeper:
     image: confluentinc/cp-zookeeper:4.1.0
     ports:
@@ -65,3 +55,10 @@ services:
     depends_on:
       - zookeeper
       - kafka01.internal-service
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.2.4
+    ports:
+      - 9200:9200
+    environment:
+      - xpack.security.enabled=false
+      - cluster.name=sentiments

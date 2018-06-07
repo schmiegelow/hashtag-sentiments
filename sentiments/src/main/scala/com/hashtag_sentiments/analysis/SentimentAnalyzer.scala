@@ -14,7 +14,7 @@ import org.apache.kafka.streams.{KafkaStreams, StreamsBuilder, StreamsConfig}
 import play.api.libs.json.Json
 
 
-class SentimentAnalyzer extends LazyLogging {
+object SentimentAnalyzer extends LazyLogging {
 
   val configuration: Config = ConfigFactory.load()
 

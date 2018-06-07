@@ -1,5 +1,8 @@
 package com.hashtag_sentiments.feeder;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hashtag_sentiments.producer.KafkaProducer;
 import twitter4j.*;
 import twitter4j.conf.ConfigurationBuilder;
 
@@ -22,14 +25,28 @@ public class TwitterFeeder {
     private long lastCreatedDate;
 
 
+    public TwitterFeeder() {
+        getConfigurationBuildObject();
+        TwitterFactory twitterFactory = new TwitterFactory(getConfigurationBuildObject().build());
+        twitter = twitterFactory.getInstance();
+    }
+
     public static void main(String[] args) {
+        String hashtag = args[0];
+
         TwitterFeeder twitterFeeder = new TwitterFeeder();
-        KafkaProducer kafkaProducer = new KafkaProducer(twitterFeeder.getPropertiesConfig());
+        KafkaProducer<String, String> kafkaProducer = new KafkaProducer<>(twitterFeeder.getPropertiesConfig());
+        ObjectMapper mapper = new ObjectMapper();
         while (true) {
             try {
-                List<Tweet> tweets = twitterFeeder.getTweets(args[0]);
-                tweets = twitterFeeder.getFilteredTweets(tweets);
-                tweets.stream().forEach(tweet -> kafkaProducer.send("tweets", tweet.getTweetId(), tweet));
+                List<Tweet> tweets;
+                tweets = twitterFeeder.getFilteredTweets(twitterFeeder.getTweets(hashtag));
+                tweets.forEach(tweet -> {
+                    try {
+                        kafkaProducer.send("tweets", String.valueOf(tweet.getTweetId()), mapper.writeValueAsString(tweet));
+                    } catch (JsonProcessingException e) {
+                        e.printStackTrace();
+                    }});
                 Thread.sleep(10000);
             } catch (Exception exception) {
                 exception.printStackTrace();
@@ -39,16 +56,15 @@ public class TwitterFeeder {
 
     private List<Tweet> getFilteredTweets(List<Tweet> tweets) {
         tweets = tweets.stream().filter(t -> t.getTimestamp() > (lastCreatedDate)).collect(Collectors.toList());
-        Optional<Tweet> lastFetchedTweet = tweets.stream().sorted((Comparator.comparing(Tweet::getTimestamp).reversed())).findFirst();
-        lastCreatedDate = lastFetchedTweet.get().getTimestamp();
-        tweets.stream().forEach(t -> System.out.println(t.getTimestamp()));
+        Optional<Tweet> lastFetchedTweet = tweets.stream().max(Comparator.comparing(Tweet::getTimestamp));
+        lastCreatedDate = lastFetchedTweet.map(Tweet::getTimestamp).orElse(lastCreatedDate);
+        tweets.forEach(t -> System.out.println(t.getTimestamp()));
         return tweets;
     }
 
     private Properties getPropertiesConfig() {
         Properties props = new Properties();
         int numInputMessages = 100;
-        String topic = "articles";
         props.put("bootstrap.servers", "kafka01.internal-service:9092");
         props.put("acks", "all");
         props.put("batch.size", numInputMessages);
@@ -58,12 +74,6 @@ public class TwitterFeeder {
         props.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         props.put("group.id", this.getClass().getName());
         return props;
-    }
-
-    public TwitterFeeder() {
-        getConfigurationBuildObject();
-        TwitterFactory twitterFactory = new TwitterFactory(getConfigurationBuildObject().build());
-        twitter = twitterFactory.getInstance();
     }
 
     private ConfigurationBuilder getConfigurationBuildObject() {

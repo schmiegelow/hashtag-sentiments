@@ -89,3 +89,10 @@ services:
     depends_on:
       - elasticsearch
       - kafka01.internal-service
+  feeder:
+    build: feeder/target/docker/stage
+    environment:
+      hashtag: "ThursdayThoughts"
+    depends_on:
+      - elasticsearch
+      - kafka01.internal-service

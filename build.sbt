@@ -32,12 +32,22 @@ lazy val commonScalacOptions = Seq(
   "-feature", // Emit warning and location for usages of features that should be imported explicitly.
 )
 
-lazy val converter = (project in file("converter"))
+lazy val sentiments = (project in file("sentiments"))
   .configs(IntegrationTest)
   .enablePlugins(JavaAppPackaging)
   .settings(
     settings,
-    name := "converter",
+    name := "sentiments",
+    libraryDependencies ++= loggingDependencies ++ commonDependencies ++ testDependencies,
+    scalacOptions := commonScalacOptions
+  )
+
+lazy val feeder = (project in file("feeder"))
+  .configs(IntegrationTest)
+  .enablePlugins(JavaAppPackaging)
+  .settings(
+    settings,
+    name := "feeder",
     libraryDependencies ++= loggingDependencies ++ commonDependencies ++ testDependencies,
     scalacOptions := commonScalacOptions
   )

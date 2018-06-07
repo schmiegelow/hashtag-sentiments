@@ -1,9 +1,9 @@
-
+import com.hashtag_sentiments.feeder.Tweet;
 import twitter4j.*;
 import twitter4j.conf.ConfigurationBuilder;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class TwitterFeeder {
 
@@ -14,15 +14,20 @@ public class TwitterFeeder {
 
     private Twitter twitter;
 
-    public static void main(String[] args) {
-
-    }
-
-
     public TwitterFeeder() {
         getConfigurationBuildObject();
         TwitterFactory twitterFactory = new TwitterFactory(getConfigurationBuildObject().build());
         twitter = twitterFactory.getInstance();
+    }
+
+    public static void main(String[] args) {
+
+        try {
+            new TwitterFeeder().getTweets("MeToo");
+        } catch (TwitterException e) {
+            e.printStackTrace();
+        }
+
     }
 
     private ConfigurationBuilder getConfigurationBuildObject() {
@@ -34,16 +39,14 @@ public class TwitterFeeder {
         return configurationBuilder;
     }
 
-    public List<Status> getTweets(String hashtag) {
-        List<Status> tweets = new ArrayList<Status>();
+    private List<Tweet> getTweets(String hashtag) throws TwitterException {
         Query query = new Query(hashtag);
-        try {
             QueryResult queryResult = twitter.search(query);
-            tweets = queryResult.getTweets();
-        } catch (TwitterException e) {
-            e.printStackTrace();
-        }
-        return tweets;
+            return queryResult
+                    .getTweets()
+                    .stream()
+                    .map(status -> new Tweet(status.getUser().getName(), status.getCreatedAt().getTime(), status.getText()))
+                    .collect(Collectors.toList()));
     }
 
 }

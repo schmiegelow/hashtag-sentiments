@@ -6,10 +6,7 @@ import com.hashtag_sentiments.producer.KafkaProducer;
 import twitter4j.*;
 import twitter4j.conf.ConfigurationBuilder;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
-import java.util.Properties;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class TwitterFeeder {
@@ -39,10 +36,12 @@ public class TwitterFeeder {
         ObjectMapper mapper = new ObjectMapper();
         while (true) {
             try {
+                System.out.println(String.format("Fetching tweets for %s at %s", hashtag, new Date()));
                 List<Tweet> tweets;
                 tweets = twitterFeeder.getFilteredTweets(twitterFeeder.getTweets(hashtag));
                 tweets.forEach(tweet -> {
                     try {
+                        System.out.println(String.format("Sending tweet %s at %s", tweet.getTweetId(), new Date()));
                         kafkaProducer.send("tweets", String.valueOf(tweet.getTweetId()), mapper.writeValueAsString(tweet));
                     } catch (JsonProcessingException e) {
                         e.printStackTrace();

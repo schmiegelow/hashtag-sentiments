@@ -55,7 +55,12 @@ object SentimentAnalyzer extends LazyLogging {
       .mapValues(value => {
         val text = new String(value)
         val tweet = Json.parse(text).as[Tweet]
-        val analyzedTweet = detectSentiment(tweet)
+        val originalLanguage = detectLanguage(tweet.tweet)
+        val analyzedTweet = if (originalLanguage == "en") {
+          detectSentiment(tweet)
+        } else {
+          detectSentiment(tweet.copy(tweet = translateText(tweet.tweet, originalLanguage).getTranslatedText))
+        }
         Json.toJson(analyzedTweet).toString().getBytes
       })
     incomingValues.to(output)

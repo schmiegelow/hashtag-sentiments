@@ -40,7 +40,7 @@ dockerCommands := Seq(
   ExecCmd("CMD", ""),
   Cmd("ARG version=local"),
   Cmd("ENV VERSION $version"),
-  Cmd("ENV HASHTAG"),
+  Cmd("ENV HASHTAG FridayFeeling"),
   Cmd("ARG commit"),
   Cmd("LABEL commit='${commit}'")
 )

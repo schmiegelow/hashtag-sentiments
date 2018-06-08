@@ -1,0 +1,102 @@
+<html lang="en-us" style="height:100%;" dir="ltr">
+  <head>
+    <title>Table - Custom Table</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="x-ua-compatible" content="IE=edge">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="../css/images/favicon.ico">
+    <link rel="apple-touch-icon-precomposed" href="../css/images/touchicon.png">
+    <meta name="apple-mobile-web-app-title" content="Oracle JET">
+    <link rel="stylesheet" id="css" href="http://www.oracle.com/webfolder/technetwork/jet/css/libs/oj/v5.0.0/alta/oj-alta-min.css">
+    <link rel="stylesheet" href="../css/demo.css">
+    <script>
+      // The "oj_whenReady" global variable enables a strategy that the busy context whenReady,
+      // will implicitly add a busy state, until the application calls applicationBootstrapComplete
+      // on the busy state context.
+      window["oj_whenReady"] = true;
+    </script>
+    <script src="http://www.oracle.com/webfolder/technetwork/jet/js/libs/require/require.js"></script>
+    <!-- RequireJS bootstrap file -->
+    <script src="../js/main.js"></script>
+    <script src="../js/demo.js"></script>
+    <style>
+    .avatar
+    {
+      border-radius: 50%; 
+      background-size: 50px 50px; 
+      width: 50px; height: 50px; 
+      display: inline-block;
+    }
+    </style>
+  </head>
+  <body class="demo-disable-bg-image">
+    <div id="sampleDemo" style="" class="demo-padding demo-container">
+      <div id="componentDemoContent" style="width: 1px; min-width: 100%;">
+        
+        <oj-table id='table' aria-label='Sales Representative Table'
+                                        data='[[dataprovider]]' 
+                                        columns='{{columnArray}}'
+                                        style='width: 100%;'>
+        </oj-table>
+        <script type="text/html" id="emp_photo">
+             <td>
+              <span class="avatar" data-bind="attr: {style: 'background-image: url(' + $context.row.Photo + ')'}"></span>
+             </td>
+        </script>
+        <script type="text/html" id="emp_name">
+             <td data-bind="text: $context.row.FirstName + ' ' + $context.row.LastName">
+             </td>
+        </script>
+        <script type="text/html" id="revenue">
+             <td>
+               <oj-input-text label-hint="Revenue"
+        	                 value="{{Revenue}}" name="revenue"
+        	                 data-bind="attr: {value: $context.row.Revenue}"
+        	                 converter= '{
+        	                 "type":"number",
+        	                 "options": {"style": "currency", "currency": "USD", "currencyDisplay": "symbol"}}'>
+               </oj-input-text>
+             </td>
+        </script>
+        <script type="text/html" id="revenue_total_label">
+             <td style="font-weight:bold;">
+               Total Revenue
+             </td>
+        </script>
+        <script type="text/html" id="revenue_total">
+             <td>
+               <oj-input-text id="table:revenue_total" label-hint="Revenue"
+               					 data-bind="attr: {value: $root.revenue_total_func($context.footerContext)}"
+        	 	                 name="revenue_total"
+        	 	                 readonly=true
+        	 	                 converter= '{
+        	 	                 "type":"number",
+        	 	                 "options": {"style": "currency", "currency": "USD", "currencyDisplay": "symbol"}}'>
+               </oj-input-text>
+             </td>
+        </script>
+        <script type="text/html" id="rating">
+             <td>
+               <oj-rating-gauge value='{{$context.row.Rating}}' readonly
+                     style="width:60px;height:15px;">
+                </oj-rating-gauge>
+             </td>
+        </script>
+        <script type="text/html" id="target">
+             <td>
+               <oj-chart type='pie'
+                     data-bind="attr: {series: JSON.stringify([{name: 'Achieved', items: [$context.row.TargetComplete]},
+                                                              {name: 'Incomplete', items: [$context.row.TargetIncomplete]}])}"
+                     style-defaults='{"dataLabelPosition": "center"}'
+                     legend='{"rendered": "off"}'
+                     style="width:100px;height:100px">
+            	 </oj-chart>
+             </td>
+        </script>
+
+        
+      </div>
+    </div>
+  </body>
+</html>

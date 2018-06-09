@@ -31,7 +31,7 @@ dockerCommands := Seq(
   Cmd("FROM", "openjdk:latest"),
   Cmd("LABEL", s"""MAINTAINER="${maintainer.value}""""),
   Cmd("RUN", "apt-get update && apt-get install -y curl && apt-get install -y supervisor"),
-  Cmd("RUN", "ln -s supervisord.conf /etc/supervisor/conf.d/supervisord.conf"),
+  Cmd("RUN", "ln -s /opt/docker/supervisor.conf /etc/supervisor/conf.d/supervisor.conf"),
   Cmd("WORKDIR", "/opt/docker"),
   Cmd("ADD", "opt /opt"),
   Cmd("RUN", "chown", "-R", "daemon:daemon", "."),
@@ -40,8 +40,7 @@ dockerCommands := Seq(
   ExecCmd("CMD", ""),
   Cmd("ARG version=local"),
   Cmd("ENV VERSION $version"),
-  Cmd("ARG hashtag"),
-  Cmd("ENV HASHTAG $hashtag"),
+  Cmd("ENV HASHTAG FridayFeeling"),
   Cmd("ARG commit"),
   Cmd("LABEL commit='${commit}'")
 )

@@ -1,6 +1,9 @@
 # hashtag-sentiments
 A prototype docker network that analyses tweets from a hashtag using Google Sentiment Analysis API
 
+You will need a valid Twitter App to run the feeder (keys are hard coded as constant there, but no longer valid) and
+valid Google application credentials with configured API access for NLP and translate.
+
 ## To build the project, run:
 
 - ```sbt package```

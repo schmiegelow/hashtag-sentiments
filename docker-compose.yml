@@ -62,6 +62,13 @@ services:
     environment:
       - xpack.security.enabled=false
       - cluster.name=sentiments
+  kibana:
+    image: docker.elastic.co/kibana/kibana:6.2.4
+    environment:
+      SERVER_NAME: kibana
+      ELASTICSEARCH_URL: http://elasticsearch:9200
+    ports:
+        - "5601:5601"
   kafka-connect:
     build: kafka-connect
     ports:
@@ -95,7 +102,9 @@ services:
   feeder:
     build: feeder/target/docker/stage
     environment:
-      hashtag: "ThursdayThoughts"
+      HASHTAG: "FridayFeeling"
     depends_on:
       - elasticsearch
       - kafka01.internal-service
+      - kafka03.internal-service
+      - kafka02.internal-service

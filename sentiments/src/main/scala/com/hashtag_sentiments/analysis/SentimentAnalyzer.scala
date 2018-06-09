@@ -52,9 +52,12 @@ object SentimentAnalyzer extends LazyLogging {
     val tweets: KStream[Array[Byte], Array[Byte]] = builder.stream(input)
 
     val incomingValues: KStream[Array[Byte], Array[Byte]] = tweets
+      .filter((_: Array[Byte], value: Array[Byte]) => {
+        val tweet = Json.parse(new String(value)).as[Tweet]
+        detectLanguage(new String(tweet.tweet)) == "hi"
+      })
       .mapValues(value => {
-        val text = new String(value)
-        val tweet = Json.parse(text).as[Tweet]
+        val tweet = Json.parse(new String(value)).as[Tweet]
         val originalLanguage = detectLanguage(tweet.tweet)
         val analyzedTweet = if (originalLanguage == "en") {
           detectSentiment(tweet)
